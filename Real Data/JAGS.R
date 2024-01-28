@@ -21,36 +21,12 @@ census.unkn <- Y - M.yes - M.i
 
 
 ## Model
-ModelCode1 <- "model{
+ModelCode <- "model{
   #Priors
   p.s ~ dunif(0,1) #probability to be seen
   p.ni.maybe ~ dunif(0,1) #probability a plant that says maybe they were seen and not interviewed
   p.s.i ~ dunif(0,1) #probability a plant was seen that he got interviewed
-  H.prior ~ dnorm(100, 1/200^2) T(0,)
-  H <- round(H.prior)
-  
-  #Transformation
-  p.i <- p.s * p.s.i
-  p.s.maybe <- p.s * (1 - p.s.i) * p.ni.maybe
-  p.yes <- p.s * (1 - p.s.i) * (1 - p.ni.maybe)
-  p.ns.maybe <- (1 - p.s) * p.ni.maybe
-  p.maybe <- p.s.maybe + p.ns.maybe
-  
-  #Model
-  M.i ~ dbin(p.i, M)
-  M.yes ~ dbin(p.yes / (1 - p.i), M - M.i)
-  M.maybe ~ dbin(p.maybe / (1 - p.yes - p.i), M - M.i - M.yes)
-  M.s.maybe ~ dbin(p.s.maybe / p.maybe, M.maybe)
-  H.s ~ dbin(p.s, H)
-  census.unkn ~ dsum(M.s.maybe, H.s)
-}
-"
-ModelCode2 <- "model{
-  #Priors
-  p.s ~ dunif(0,1) #probability to be seen
-  p.ni.maybe ~ dunif(0,1) #probability a plant that says maybe they were seen and not interviewed
-  p.s.i ~ dunif(0,1) #probability a plant was seen that he got interviewed
-  H.prior ~ dnorm(1000, 1/10000^2) T(0,)
+  H.prior ~ dlnorm(0, 1/10^2)
   H <- round(H.prior)
   
   #Transformation
@@ -104,7 +80,6 @@ for(set in 1:5){
                "M.yes" = M.yes[set],
                "M.maybe" = M.maybe[set],
                "census.unkn" = census.unkn[set])
-  ModelCode <- ifelse(set==4, ModelCode2, ModelCode1)
   jagsfit <- jags(data=data, n.chains=3, inits=initial.values,
                   parameters.to.save=vars.monitor, n.iter=30000, n.burnin=15000,n.thin=1,
                   DIC=TRUE, model.file=textConnection(ModelCode))
@@ -150,3 +125,4 @@ eva <- cbind(as.vector(t(pmean)),as.vector(t(pmed)),as.vector(t(psd)),as.vector(
 colnames(eva) <- c("Mean","Median", "SD", "Lower", "Upper")
 rownames(eva) <- rep(c("H", "p.s", "p.ni.maybe", "p.s.i"),5)
 round(eva,2)
+

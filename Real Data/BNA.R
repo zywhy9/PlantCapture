@@ -39,7 +39,8 @@ ld_complete <- function(M.i,M.yes,M.maybe,M.no,Y,param){
     ld1 <- dmultinom(M.comp, prob=c(p.i,p.yes,p.s.maybe,p.ns.maybe,p.no), log=T) ## Multinomial(M,theta)
     ld2 <- dnorm(H.s, H*p.s, sqrt(H*p.s*(1-p.s)), log=T) ## Binomial(H,p.s)
     logitpar <- param[2:4]
-    res <- c(res, ld1+ld2+sum(-logitpar-2*log(1+exp(-logitpar))))
+    Hprior <- dlnorm(H, 0, 10, log=T) ## Log-normal(0, 100) prior for H
+    res <- c(res, ld1+ld2+sum(-logitpar-2*log(1+exp(-logitpar)))+Hprior)
   }
   res <- matrixStats::logSumExp(res)
   if(res==-Inf){
