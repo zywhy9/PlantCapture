@@ -2,15 +2,15 @@
 ld_complete <- function(M.i,M.yes,M.maybe,M.no,Y,H.i,param){
   ## Target
   H <- exp(param[1])
-  p.s <- boot::inv.logit(param[2])
-  p.s.i <- boot::inv.logit(param[3])
+  p.c <- boot::inv.logit(param[2])
+  p.c.i <- boot::inv.logit(param[3])
   p.ni.maybe <- boot::inv.logit(param[4])
   ## Transformation
-  p.i <- p.s * p.s.i
-  p.yes <- p.s * (1 - p.s.i) * (1 - p.ni.maybe)
-  p.s.maybe <- p.s * (1 - p.s.i) * p.ni.maybe
-  p.ns.maybe <- (1 - p.s) * p.ni.maybe
-  p.no <- (1 - p.s) * (1 - p.ni.maybe)
+  p.i <- p.c * p.c.i
+  p.yes <- p.c * (1 - p.c.i) * (1 - p.ni.maybe)
+  p.c.maybe <- p.c * (1 - p.c.i) * p.ni.maybe
+  p.ns.maybe <- (1 - p.c) * p.ni.maybe
+  p.no <- (1 - p.c) * (1 - p.ni.maybe)
   ## Density
   res <- c()
   uppb <- min(M.maybe,Y-M.i-M.yes)
@@ -19,9 +19,9 @@ ld_complete <- function(M.i,M.yes,M.maybe,M.no,Y,H.i,param){
     M.maybe.ns <- M.maybe - M.maybe.s
     H.s <- Y - M.i - M.yes - M.maybe.s
     M.comp <- c(M.i,M.yes,M.maybe.s,M.maybe.ns,M.no)
-    ld1 <- dmultinom(M.comp, prob=c(p.i,p.yes,p.s.maybe,p.ns.maybe,p.no), log=T) ## Multinomial(M,theta)
-    ld2 <- dnorm(H.s, H*p.s, sqrt(H*p.s*(1-p.s)), log=T) ## Binomial(H,p.s)
-    ld3 <- dbinom(H.i, H.s, p.s.i, log=T) ## Binomial(H.s,p.s.i)
+    ld1 <- dmultinom(M.comp, prob=c(p.i,p.yes,p.c.maybe,p.ns.maybe,p.no), log=T) ## Multinomial(M,theta)
+    ld2 <- dnorm(H.s, H*p.c, sqrt(H*p.c*(1-p.c)), log=T) ## Binomial(H,p.c)
+    ld3 <- dbinom(H.i, H.s, p.c.i, log=T) ## Binomial(H.s,p.c.i)
     logitpar <- param[2:4] ## Uniform(0,1) prior for probability parameters
     Hprior <- dlnorm(H, 0, 10, log=T) ## Log-normal(0, 100) prior for H
     res <- c(res, ld1+ld2+ld3+sum(-logitpar-2*log(1+exp(-logitpar)))+Hprior)

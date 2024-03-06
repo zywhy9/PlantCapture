@@ -1,19 +1,19 @@
 ## Small City
 set.seed(1234)
-M <- 15
-H <- 150
-p.s <- 0.7
-p.maybe <- 0.2
+M <- 15 ## Number of plants
+H <- 150 ## Number of Homeless
+p.c <- 0.7 ## Capture probability
+p.maybe <- 0.2 ## Probability that a plant self-assessed as maybe
 
 
 for(set in 1:1000){
-  H.s <- rbinom(1, H, p.s)
+  H.s <- rbinom(1, H, p.c)
   flag <- T
   while(flag){
-    M.yes <- rbinom(1, M, p.s*(1-p.maybe))
+    M.yes <- rbinom(1, M, p.c*(1-p.maybe))
     if(M.yes==0){next}
-    M.s.maybe <- rbinom(1, M - M.yes, p.s*p.maybe / (1-p.s*(1-p.maybe)))
-    M.ns.maybe <- rbinom(1, M - M.yes - M.s.maybe, (1-p.s)*p.maybe/(1-p.s*(1-p.maybe)-p.s*p.maybe))
+    M.s.maybe <- rbinom(1, M - M.yes, p.c*p.maybe / (1-p.c*(1-p.maybe)))
+    M.ns.maybe <- rbinom(1, M - M.yes - M.s.maybe, (1-p.c)*p.maybe/(1-p.c*(1-p.maybe)-p.c*p.maybe))
     M.maybe <- M.s.maybe + M.ns.maybe
     M.no <- M - M.yes - M.maybe
     if(M.no==0){next}
@@ -34,18 +34,18 @@ for(set in 1:1000){
 set.seed(1234)
 M <- 100
 H <- 1500
-p.s <- 0.7
+p.c <- 0.7
 p.maybe <- 0.2
 
 
 for(set in 1:1000){
-  H.s <- rbinom(1, H, p.s)
+  H.s <- rbinom(1, H, p.c)
   flag <- T
   while(flag){
-    M.yes <- rbinom(1, M, p.s*(1-p.maybe))
+    M.yes <- rbinom(1, M, p.c*(1-p.maybe))
     if(M.yes==0){next}
-    M.s.maybe <- rbinom(1, M - M.yes, p.s*p.maybe / (1-p.s*(1-p.maybe)))
-    M.ns.maybe <- rbinom(1, M - M.yes - M.s.maybe, (1-p.s)*p.maybe/(1-p.s*(1-p.maybe)-p.s*p.maybe))
+    M.s.maybe <- rbinom(1, M - M.yes, p.c*p.maybe / (1-p.c*(1-p.maybe)))
+    M.ns.maybe <- rbinom(1, M - M.yes - M.s.maybe, (1-p.c)*p.maybe/(1-p.c*(1-p.maybe)-p.c*p.maybe))
     M.maybe <- M.s.maybe + M.ns.maybe
     M.no <- M - M.yes - M.maybe
     if(M.no==0){next}

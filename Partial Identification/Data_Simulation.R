@@ -1,29 +1,29 @@
 set.seed(1234)
 
-p.s <- 0.7
+p.c <- 0.7
 p.ni.maybe <- 0.2
-p.s.i <- 0.8
+p.c.i <- 0.8
 
-p.i <- p.s * p.s.i
-p.yes <- p.s * (1 - p.s.i) * (1 - p.ni.maybe)
-p.s.maybe <- p.s * (1 - p.s.i) * p.ni.maybe
-p.ns.maybe <- (1 - p.s) * p.ni.maybe
-p.no <- (1 - p.s) * (1 - p.ni.maybe)
+p.i <- p.c * p.c.i
+p.yes <- p.c * (1 - p.c.i) * (1 - p.ni.maybe)
+p.c.maybe <- p.c * (1 - p.c.i) * p.ni.maybe
+p.ns.maybe <- (1 - p.c) * p.ni.maybe
+p.no <- (1 - p.c) * (1 - p.ni.maybe)
 
 ## Small city
 H <- 1500
 M <- 100
 
 for(set in 1:1000){
-  H.s <- rbinom(1, H, p.s)
-  H.i <- rbinom(1, H.s, p.s.i)
+  H.s <- rbinom(1, H, p.c)
+  H.i <- rbinom(1, H.s, p.c.i)
   flag <- T
   while(flag){
     M.i <- rbinom(1, M, p.i)
     M.yes <- rbinom(1, M - M.i, p.yes/(1 - p.i))
     if(M.i==0 & M.yes==0){next}
-    M.s.maybe <- rbinom(1, M - M.i - M.yes, p.s.maybe / (1 - p.i - p.yes))
-    M.ns.maybe <- rbinom(1, M - M.i - M.yes - M.s.maybe, p.ns.maybe / (1 - p.i - p.yes - p.s.maybe))
+    M.s.maybe <- rbinom(1, M - M.i - M.yes, p.c.maybe / (1 - p.i - p.yes))
+    M.ns.maybe <- rbinom(1, M - M.i - M.yes - M.s.maybe, p.ns.maybe / (1 - p.i - p.yes - p.c.maybe))
     M.maybe <- M.s.maybe + M.ns.maybe
     M.no <- M - M.i - M.yes - M.maybe
     if(M.no==0){next}
@@ -46,15 +46,15 @@ H <- 150
 M <- 15
 
 for(set in 1:1000){
-  H.s <- rbinom(1, H, p.s)
-  H.i <- rbinom(1, H.s, p.s.i)
+  H.s <- rbinom(1, H, p.c)
+  H.i <- rbinom(1, H.s, p.c.i)
   flag <- T
   while(flag){
     M.i <- rbinom(1, M, p.i)
     M.yes <- rbinom(1, M - M.i, p.yes/(1 - p.i))
     if(M.i==0 & M.yes==0){next}
-    M.s.maybe <- rbinom(1, M - M.i - M.yes, p.s.maybe / (1 - p.i - p.yes))
-    M.ns.maybe <- rbinom(1, M - M.i - M.yes - M.s.maybe, p.ns.maybe / (1 - p.i - p.yes - p.s.maybe))
+    M.s.maybe <- rbinom(1, M - M.i - M.yes, p.c.maybe / (1 - p.i - p.yes))
+    M.ns.maybe <- rbinom(1, M - M.i - M.yes - M.s.maybe, p.ns.maybe / (1 - p.i - p.yes - p.c.maybe))
     M.maybe <- M.s.maybe + M.ns.maybe
     M.no <- M - M.i - M.yes - M.maybe
     if(M.no==0){next}

@@ -3,21 +3,21 @@ ld_complete <- function(M.i,M.yes,M.maybe,M.no,Y,H.i,param){
   ## Target
   H.e <- exp(param[1])
   H.h <- exp(param[2])
-  p.s.e <- boot::inv.logit(param[3])
-  p.s.h <- boot::inv.logit(param[4])
-  p.s.i <- boot::inv.logit(param[5])
+  p.c.e <- boot::inv.logit(param[3])
+  p.c.h <- boot::inv.logit(param[4])
+  p.c.i <- boot::inv.logit(param[5])
   p.ni.maybe <- boot::inv.logit(param[6])
   ## Transformation
-  p.s <- c(p.s.e, p.s.h)
+  p.c <- c(p.c.e, p.c.h)
   H <- c(H.e, H.h)
   
-  p.i <- p.yes <- p.s.maybe <- p.ns.maybe <- p.no <- H.s <- rep(NA, 2)
+  p.i <- p.yes <- p.c.maybe <- p.ns.maybe <- p.no <- H.s <- rep(NA, 2)
   for(i in 1:2){
-    p.i[i] <- p.s[i] * p.s.i
-    p.yes[i] <- p.s[i] * (1 - p.s.i) * (1 - p.ni.maybe)
-    p.s.maybe[i] <- p.s[i] * (1 - p.s.i) * p.ni.maybe
-    p.ns.maybe[i] <- (1 - p.s[i]) * p.ni.maybe
-    p.no[i] <- (1 - p.s[i]) * (1 - p.ni.maybe)
+    p.i[i] <- p.c[i] * p.c.i
+    p.yes[i] <- p.c[i] * (1 - p.c.i) * (1 - p.ni.maybe)
+    p.c.maybe[i] <- p.c[i] * (1 - p.c.i) * p.ni.maybe
+    p.ns.maybe[i] <- (1 - p.c[i]) * p.ni.maybe
+    p.no[i] <- (1 - p.c[i]) * (1 - p.ni.maybe)
   }
   
   ## Density
@@ -37,9 +37,9 @@ ld_complete <- function(M.i,M.yes,M.maybe,M.no,Y,H.i,param){
       }
       ld <- matrix(0,nrow=2,ncol=3)
       for(i in 1:2){
-        ld[i,1] <- dmultinom(M.comp[i,], prob=c(p.i[i],p.yes[i],p.s.maybe[i],p.ns.maybe[i],p.no[i]), log=T) ## Multinomial(M,theta)
-        ld[i,2] <- dnorm(H.s[i], H[i]*p.s[i], sqrt(H[i]*p.s[i]*(1-p.s[i])), log=T) ## Binomial(H,p.s)
-        ld[i,3] <- dbinom(H.i[i], H.s[i], p.s.i, log=T) ## Binomial(H.s,p.s.i)
+        ld[i,1] <- dmultinom(M.comp[i,], prob=c(p.i[i],p.yes[i],p.c.maybe[i],p.ns.maybe[i],p.no[i]), log=T) ## Multinomial(M,theta)
+        ld[i,2] <- dnorm(H.s[i], H[i]*p.c[i], sqrt(H[i]*p.c[i]*(1-p.c[i])), log=T) ## Binomial(H,p.c)
+        ld[i,3] <- dbinom(H.i[i], H.s[i], p.c.i, log=T) ## Binomial(H.s,p.c.i)
       }
       logitpar <- param[3:6] ## Uniform(0,1) prior for probability parameters
       Hprior <- dlnorm(H.e, 0, 10, log=T) + dlnorm(H.h, 0, 10, log=T) ## Log-normal(0, 100) prior for H

@@ -5,16 +5,16 @@ library(R2jags)
 ModelCode <- "model{
   ## Priors
   
-  p.s ~ dunif(0,1) #probability to be seen
+  p.c ~ dunif(0,1) #probability to be seen
   p.maybe ~ dunif(0,1) #probability a plant that says maybe they were seen
   H ~ dlnorm(0, 1/10^2)
   
   ## Model
   
   M.maybe ~ dbin(p.maybe, M)
-  M.yes ~ dbin(p.s, M-M.maybe)
+  M.yes ~ dbin(p.c, M-M.maybe)
   M.no <- M - M.maybe
-  census.unkn ~ dbin(p.s,total)
+  census.unkn ~ dbin(p.c,total)
   total <- round(H) + M.maybe #number of real homeless
 }
 "
@@ -31,16 +31,16 @@ for(set in 1:1000){
   H.s.inits <- simdata$census.unkn - M.s.maybe.inits ## Set initial values
   H.inits <- H.s.inits/0.7 ## Set initial values
   
-  initial.values <- list(list("p.s" = 0.5,
+  initial.values <- list(list("p.c" = 0.5,
                               "p.maybe" = 0.5,
                               "H" = H.inits),
-                         list("p.s" = 0.6,
+                         list("p.c" = 0.6,
                               "p.maybe" = 0.3,
                               "H" = H.inits),
-                         list("p.s" = 0.4,
+                         list("p.c" = 0.4,
                               "p.maybe" = 0.1,
                               "H" = H.inits))
-  vars.monitor <- c("p.s", "p.maybe", "H")
+  vars.monitor <- c("p.c", "p.maybe", "H")
   data <- list("M" = simdata$M,
                "M.yes" = simdata$M.yes,
                "M.maybe" = simdata$M.maybe,

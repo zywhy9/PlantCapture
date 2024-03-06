@@ -4,10 +4,10 @@ library(R2jags)
 ## Inference
 ModelCode <- "model{
   #Priors
-  p.s[1] ~ dunif(0,1)
-  p.s[2] ~ dunif(0,1)
+  p.c[1] ~ dunif(0,1)
+  p.c[2] ~ dunif(0,1)
   p.ni.maybe ~ dunif(0,1) #probability a plant that says maybe they were seen and not interviewed
-  p.s.i ~ dunif(0,1) #probability a plant was seen that he got interviewed
+  p.c.i ~ dunif(0,1) #probability a plant was seen that he got interviewed
   # H.prior[1] ~ dnorm(100, 1/200^2) T(0,)
   # H.prior[2] ~ dnorm(100, 1/200^2) T(0,)
   # H <- round(H.prior)
@@ -18,11 +18,11 @@ ModelCode <- "model{
   
   #Tranformation
   for(i in 1:2){
-    p.i[i] <- p.s[i] * p.s.i
-    p.s.maybe[i] <- p.s[i] * (1 - p.s.i) * p.ni.maybe
-    p.yes[i] <- p.s[i] * (1 - p.s.i) * (1 - p.ni.maybe)
-    p.ns.maybe[i] <- (1 - p.s[i]) * p.ni.maybe
-    p.maybe[i] <- p.s.maybe[i] + p.ns.maybe[i]
+    p.i[i] <- p.c[i] * p.c.i
+    p.c.maybe[i] <- p.c[i] * (1 - p.c.i) * p.ni.maybe
+    p.yes[i] <- p.c[i] * (1 - p.c.i) * (1 - p.ni.maybe)
+    p.ns.maybe[i] <- (1 - p.c[i]) * p.ni.maybe
+    p.maybe[i] <- p.c.maybe[i] + p.ns.maybe[i]
   }
   
   #Model
@@ -30,9 +30,9 @@ ModelCode <- "model{
     M.i[i] ~ dbin(p.i[i], M[i])
     M.yes[i] ~ dbin(p.yes[i] / (1 - p.i[i]), M[i] - M.i[i])
     M.maybe[i] ~ dbin(p.maybe[i] / (1 - p.yes[i] - p.i[i]), M[i] - M.i[i] - M.yes[i])
-    M.s.maybe[i] ~ dbin(p.s.maybe[i] / p.maybe[i], M.maybe[i])
-    H.s[i] ~ dbin(p.s[i], H[i])
-    H.i[i] ~ dbin(p.s.i, H.s[i])
+    M.s.maybe[i] ~ dbin(p.c.maybe[i] / p.maybe[i], M.maybe[i])
+    H.s[i] ~ dbin(p.c[i], H[i])
+    H.i[i] ~ dbin(p.c.i, H.s[i])
     temp[i] ~ dsum(M.s.maybe[i], H.s[i])
   }
   H.t <- sum(H[1:2])
@@ -49,26 +49,26 @@ for(set in 1:1000){
   H.s.inits <- simdata$temp - M.s.maybe.inits
   H.inits <- H.s.inits/0.7
   
-  initial.values <- list(list("p.s" = c(0.8,0.2),
-                              "p.s.i" = 0.5,
+  initial.values <- list(list("p.c" = c(0.8,0.2),
+                              "p.c.i" = 0.5,
                               "p.ni.maybe" = 0.5,
                               "M.s.maybe" = M.s.maybe.inits,
                               "H.s" = H.s.inits,
                               "H.prior" = H.inits),
-                         list("p.s" = c(0.6, 0.4),
-                              "p.s.i" = 0.3,
+                         list("p.c" = c(0.6, 0.4),
+                              "p.c.i" = 0.3,
                               "p.ni.maybe" = 0.8,
                               "M.s.maybe" = M.s.maybe.inits,
                               "H.s" = H.s.inits,
                               "H.prior" = H.inits),
-                         list("p.s" = c(0.7, 0.3),
-                              "p.s.i" = 0.8,
+                         list("p.c" = c(0.7, 0.3),
+                              "p.c.i" = 0.8,
                               "p.ni.maybe" = 0.1,
                               "M.s.maybe" = M.s.maybe.inits,
                               "H.s" = H.s.inits,
                               "H.prior" = H.inits))
   
-  vars.monitor <- c("p.s", "p.ni.maybe", "p.s.i", "H.t")
+  vars.monitor <- c("p.c", "p.ni.maybe", "p.c.i", "H.t")
   data <- list("M" = simdata$M,
                "M.i" = simdata$M.i,
                "M.yes" = simdata$M.yes,

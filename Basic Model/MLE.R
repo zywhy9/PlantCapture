@@ -2,14 +2,14 @@
 ld_complete <- function(M.yes,M.maybe,M.no,Y,param){
   ## Target
   H <- exp(param[1])
-  p.s <- boot::inv.logit(param[2])
+  p.c <- boot::inv.logit(param[2])
   p.maybe <- boot::inv.logit(param[3])
   ## Transformation
-  p.yes <- p.s * (1 - p.maybe)
-  p.no <- (1 - p.s) * (1 - p.maybe)
+  p.yes <- p.c * (1 - p.maybe)
+  p.no <- (1 - p.c) * (1 - p.maybe)
   ## Density
   ld1 <- dmultinom(c(M.yes,M.maybe,M.no), prob=c(p.yes,p.maybe,p.no), log=T) ## Multinomial(M,theta)
-  ld2 <- dnorm(Y-M.yes, (H+M.maybe)*p.s, sqrt((H+M.maybe)*p.s*(1-p.s)), log=T) ## Binomial(H,p.s)
+  ld2 <- dnorm(Y-M.yes, (H+M.maybe)*p.c, sqrt((H+M.maybe)*p.c*(1-p.c)), log=T) ## Binomial(H,p.c)
   res <- ld1 + ld2
   if(res==-Inf){
     return(-1e10) ## Avoid error with Inf

@@ -8,7 +8,7 @@ nchain <- 3 ## Number of MCMC chains
 nitert <- niter * nchain ## Total iterations
 npar <- 3 ## Number of parameters of interest
 results <- matrix(NA, nrow=nitert*nset, ncol=npar)
-colnames(results) <- c("H","p.s","p.maybe")
+colnames(results) <- c("H","p.c","p.maybe")
 
 true.value <- c(1500,0.7,0.2) ## True value of parameters
 
@@ -23,7 +23,7 @@ ci.u <- matrix(0,nrow=nset,ncol=npar)
 for(i in 1:nset){
   temp <- readRDS(paste0("res15/res",i,".rds")) ## Read dataset for small cities. Change the address for large cities.
   tempH <- as.vector(temp[,,"H"]) ## Transform matrix to vector for each parameter
-  tempps <- as.vector(temp[,,"p.s"])
+  tempps <- as.vector(temp[,,"p.c"])
   temppmay <- as.vector(temp[,,"p.maybe"])
   temp <- cbind(tempH,tempps,temppmay) ## Save data to a matrix with columns as variables and rows as iterations
   results[(nitert*(i-1)+1):(nitert*i),] <- temp ## Save this dataset to the final results matrix
