@@ -1,5 +1,3 @@
-set.seed(1234)
-
 p.c <- 0.7
 p.ni.maybe <- 0.2
 p.c.i <- 0.8
@@ -10,7 +8,8 @@ p.c.maybe <- p.c * (1 - p.c.i) * p.ni.maybe
 p.ns.maybe <- (1 - p.c) * p.ni.maybe
 p.no <- (1 - p.c) * (1 - p.ni.maybe)
 
-## Small city
+## Large city
+set.seed(1234)
 H <- 1500
 M <- 100
 
@@ -42,6 +41,7 @@ for(set in 1:1000){
 }
 
 ## Small city
+set.seed(1234)
 H <- 150
 M <- 15
 
