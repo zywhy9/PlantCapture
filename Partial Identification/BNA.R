@@ -92,7 +92,7 @@ true.value <- c(150,0.7,0.8,0.2) ## True value for small cities
 
 pmn <- apply(meanmt,2,mean) ## Expected posterior mean
 psd <- apply(meanmt,2,sd) ## Standard error of posterior mean
-epsd <- apply(sdmt,2,mean) ## Expected posterior standard deviation
+epsd <- apply(fsdmt,2,mean) ## Expected posterior standard deviation
 
 bias <- pmn - true.value ## Bias
 rbias <- bias / true.value ## Relative bias
